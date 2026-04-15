@@ -3,231 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>انضم لفريق BOSS | تسجيل جديد</title>
+    <title>تسجيل الدخول | BOSS</title>
     <style>
-        :root {
-            --gold: #fbbf24;
-            --blue: #38bdf8;
-            --dark-bg: #0f172a;
-            --glass: rgba(30, 41, 59, 0.7);
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background: url('https://files.catbox.moe/x4wlsm.png') center/cover no-repeat fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: white;
-        }
-
-        /* حاوية الفورم في المنتصف */
-        .register-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .register-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--gold), var(--blue));
-        }
-
-        h2 {
-            color: var(--gold);
-            margin-bottom: 10px;
-            font-size: 28px;
-            text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
-        }
-
-        p.subtitle {
-            color: #94a3b8;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            text-align: right;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: var(--blue);
-            margin-right: 5px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #334155;
-            border-radius: 10px;
-            color: white;
-            outline: none;
-            transition: 0.3s;
-            box-sizing: border-box;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            background: linear-gradient(45deg, var(--gold), #d97706);
-            border: none;
-            border-radius: 10px;
-            color: #000;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
-        }
-
-        .footer-link {
-            margin-top: 20px;
-            font-size: 13px;
-        }
-
-        .footer-link a {
-            color: var(--blue);
-            text-decoration: none;
-        }
-
-        /* أنيميشن التحميل */
-        .loading-overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
+        :root { --gold: #fbbf24; --blue: #38bdf8; --glass: rgba(30, 41, 59, 0.7); }
+        body { margin: 0; background: url('https://files.catbox.moe/x4wlsm.png') center/cover; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
+        .card { background: var(--glass); backdrop-filter: blur(15px); padding: 40px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(15,23,42,0.8); border: 1px solid #334155; border-radius: 10px; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--gold), #d97706); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="register-card">
-        <div id="loading" class="loading-overlay">جاري حفظ بياناتك يا بطل...</div>
-        
-        <h2>انضم لفريق BOSS</h2>
-        <p class="subtitle">سجل بياناتك وابدأ رحلة النجاح معنا</p>
-        
-        <form id="registerForm">
-            <div class="input-group">
-                <label>الاسم بالكامل</label>
-                <input type="text" id="Name" placeholder="أدخل اسمك الثلاثي" required>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <div class="input-group" style="flex: 1;">
-                    <label>السن</label>
-                    <input type="number" id="Age" placeholder="عمرك" required>
-                </div>
-                <div class="input-group" style="flex: 2;">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="Phone" placeholder="رقم الواتساب" required>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>وسيلة استلام الأرباح</label>
-                <select id="PaymentMethod" required>
-                    <option value="">اختر المحفظة</option>
-                    <option value="فودافون كاش">فودافون كاش</option>
-                    <option value="أورنج كاش">أورنج كاش</option>
-                    <option value="اتصالات كاش">اتصالات كاش</option>
-                    <option value="وي كاش">وي كاش</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>رقم المحفظة</label>
-                <input type="text" id="Wallet" placeholder="الرقم اللي هنبعت عليه الفلوس" required>
-            </div>
-
-            <div class="input-group">
-                <label>رابط صورتك (من catbox.moe)</label>
-                <input type="url" id="PicUrl" placeholder="https://files.catbox.moe/xxxx.png">
-            </div>
-
-            <button type="submit" id="submitBtn">إنشاء الحساب بنجاح</button>
-        </form>
-
-        <div class="footer-link">
-            لديك حساب بالفعل؟ <a href="login.html">سجل دخولك</a>
-        </div>
+    <div class="card">
+        <h2 style="color: var(--gold);">تسجيل دخول المسوقين</h2>
+        <p>أدخل رقم الهاتف المسجل للدخول</p>
+        <input type="tel" id="userPhone" placeholder="رقم الهاتف">
+        <button onclick="userLogin()">دخول لوحة التحكم</button>
+        <p style="margin-top:20px; font-size:13px;">ليس لديك حساب؟ <a href="register.html" style="color:var(--blue);">سجل هنا</a></p>
     </div>
 
     <script>
-        const form = document.getElementById('registerForm');
-        const loading = document.getElementById('loading');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            loading.style.display = 'flex';
-
-            const formData = {
-                Name: document.getElementById('Name').value,
-                Age: document.getElementById('Age').value,
-                Phone: document.getElementById('Phone').value,
-                PaymentMethod: document.getElementById('PaymentMethod').value,
-                Wallet: document.getElementById('Wallet').value,
-                PicUrl: document.getElementById('PicUrl').value || 'https://files.catbox.moe/lhgbrl.png',
-                Salary: "0",
-                Rating: "0"
-            };
-
-            fetch('https://sheetdb.io/api/v1/uvhb8vxlpe7ve', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    data: [formData]
-                })
-            })
-            .then(response => response.json())
+        function userLogin() {
+            const phone = document.getElementById('userPhone').value;
+            if(!phone) return alert('برجاء إدخال الرقم');
+            
+            fetch(`https://sheetdb.io/api/v1/uvhb8vxlpe7ve/search?Phone=${phone}`)
+            .then(res => res.json())
             .then(data => {
-                loading.style.display = 'none';
-                alert('مبروك يا بطل! تم إنشاء حسابك بنجاح. تقدر تسجل دخول دلوقتي.');
-                window.location.href = 'login.html';
-            })
-            .catch(error => {
-                loading.style.display = 'none';
-                alert('حصل خطأ بسيط، حاول مرة تانية.');
-                console.error('Error:', error);
+                if(data.length > 0) {
+                    localStorage.setItem('currentUser', JSON.stringify(data[0]));
+                    window.location.href = 'user-dash.html';
+                } else {
+                    alert('هذا الرقم غير مسجل عندنا يا بطل!');
+                }
             });
-        });
+        }
     </script>
 </body>
 </html>
