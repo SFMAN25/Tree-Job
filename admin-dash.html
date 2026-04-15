@@ -2,55 +2,131 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>BOSS CONTROL PANEL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الـ BOSS</title>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e293b; }
-        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #334155; }
-        th { background: #fbbf24; color: black; }
-        .user-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        :root { --gold: #fbbf24; --blue: #38bdf8; --red: #f87171; --green: #4ade80; --dark: #0f172a; }
+        body { background: var(--dark); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); padding-bottom: 15px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 10px; overflow: hidden; font-size: 14px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #334155; }
+        th { background: #334155; color: var(--gold); }
+        .status-badge { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 12px; }
+        .active { background: rgba(74, 222, 128, 0.2); color: var(--green); }
+        .pending { background: rgba(248, 113, 113, 0.2); color: var(--red); }
+        button { cursor: pointer; border: none; border-radius: 5px; padding: 8px 12px; font-weight: bold; transition: 0.3s; }
+        .btn-toggle { background: var(--blue); color: #000; }
+        .btn-delete { background: var(--red); color: white; margin-right: 5px; }
+        input[type="number"] { width: 60px; background: #0f172a; border: 1px solid var(--gold); color: white; border-radius: 5px; text-align: center; }
+        .save-btn { background: var(--gold); color: #000; padding: 5px; margin-top: 5px; display: block; width: 100%; font-size: 10px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>لوحة تحكم المدير (الشجرة)</h1>
-        <table id="adminTable">
-            <thead>
-                <tr>
-                    <th>الصورة</th>
-                    <th>الاسم</th>
-                    <th>الهاتف</th>
-                    <th>المحفظة</th>
-                    <th>الراتب</th>
-                    <th>التقييم</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                </tbody>
-        </table>
+
+    <div class="header">
+        <h2>لوحة تحكم المدير (الـ BOSS)</h2>
+        <button onclick="fetchData()" style="background: var(--gold);">تحديث البيانات 🔄</button>
     </div>
 
-    <script>
-        if(sessionStorage.getItem('isAdmin') !== 'true') window.location.href = 'admin-login.html';
+    <table>
+        <thead>
+            <tr>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>الراتب</th>
+                <th>التقييم</th>
+                <th>الحالة</th>
+                <th>التحكم</th>
+            </tr>
+        </thead>
+        <tbody id="usersTable">
+            </tbody>
+    </table>
 
-        fetch('https://sheetdb.io/api/v1/uvhb8vxlpe7ve')
-        .then(res => res.json())
-        .then(users => {
-            const body = document.getElementById('tableBody');
-            users.forEach(user => {
-                body.innerHTML += `
-                    <tr>
-                        <td><img src="${user.PicUrl}" class="user-img"></td>
-                        <td>${user.Name}</td>
-                        <td>${user.Phone}</td>
-                        <td>${user.Wallet} (${user.PaymentMethod})</td>
-                        <td style="color:#fbbf24; font-weight:bold;">${user.Salary} ج</td>
-                        <td>${user.Rating} ⭐</td>
-                    </tr>
-                `;
+    <script>
+        const apiURL = "https://sheetdb.io/api/v1/uvhb8vxlpe7ve";
+
+        // 1. وظيفة سحب البيانات وعرضها في الجدول
+        function fetchData() {
+            const tableBody = document.getElementById('usersTable');
+            tableBody.innerHTML = '<tr><td colspan="6">جاري تحميل فريق العمل...</td></tr>';
+
+            fetch(apiURL)
+            .then(res => res.json())
+            .then(data => {
+                tableBody.innerHTML = '';
+                data.forEach(user => {
+                    const statusClass = user.Status === 'Active' ? 'active' : 'pending';
+                    const btnText = user.Status === 'Active' ? 'تعطيل ❌' : 'تفعيل ✅';
+                    
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${user.Name}</td>
+                            <td>${user.Phone}</td>
+                            <td>
+                                <input type="number" id="sal-${user.Phone}" value="${user.Salary}">
+                                <button class="save-btn" onclick="updateAmount('${user.Phone}', 'Salary')">حفظ</button>
+                            </td>
+                            <td>
+                                <input type="number" id="rate-${user.Phone}" value="${user.Rating}" max="5">
+                                <button class="save-btn" onclick="updateAmount('${user.Phone}', 'Rating')">حفظ</button>
+                            </td>
+                            <td><span class="status-badge ${statusClass}">${user.Status}</span></td>
+                            <td>
+                                <button class="btn-toggle" onclick="toggleStatus('${user.Phone}', '${user.Status}')">${btnText}</button>
+                                <button class="btn-delete" onclick="deleteUser('${user.Phone}')">حذف</button>
+                            </td>
+                        </tr>
+                    `;
+                });
             });
-        });
+        }
+
+        // 2. وظيفة تفعيل/تعطيل الحساب
+        function toggleStatus(phone, currentStatus) {
+            const newStatus = currentStatus === 'Active' ? 'Pending' : 'Active';
+            
+            fetch(`${apiURL}/Phone/${phone}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { "Status": newStatus } })
+            })
+            .then(() => {
+                alert(`تم تغيير حالة الحساب إلى ${newStatus}`);
+                fetchData();
+            });
+        }
+
+        // 3. وظيفة تحديث الراتب أو التقييم
+        function updateAmount(phone, field) {
+            const val = field === 'Salary' ? document.getElementById(`sal-${phone}`).value : document.getElementById(`rate-${phone}`).value;
+            
+            fetch(`${apiURL}/Phone/${phone}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: { [field]: val } })
+            })
+            .then(() => {
+                alert(`تم تحديث ${field === 'Salary' ? 'الراتب' : 'التقييم'} بنجاح!`);
+                fetchData();
+            });
+        }
+
+        // 4. وظيفة حذف موظف نهائياً
+        function deleteUser(phone) {
+            if(confirm('هل أنت متأكد من حذف هذا الموظف نهائياً؟')) {
+                fetch(`${apiURL}/Phone/${phone}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    alert('تم الحذف بنجاح');
+                    fetchData();
+                });
+            }
+        }
+
+        // تشغيل السحب عند فتح الصفحة
+        fetchData();
     </script>
 </body>
 </html>
