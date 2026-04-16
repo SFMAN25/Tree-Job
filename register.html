@@ -40,41 +40,39 @@
     </div>
 
     <script>
-        async function registerUser() {
-            const btn = document.getElementById('regBtn');
-            const userData = {
-                Name: document.getElementById('regName').value,
-                Phone: document.getElementById('regPhone').value,
-                Password: document.getElementById('regPass').value,
-                Work_Area: document.getElementById('regArea').value,
-                Wallet_Type: document.getElementById('walletType').value,
-                Wallet_Number: document.getElementById('walletNum').value
-            };
+       async function registerUser() {
+    const btn = document.getElementById('regBtn');
+    const userData = {
+        Name: document.getElementById('regName').value,
+        Phone: document.getElementById('regPhone').value,
+        Password: document.getElementById('regPass').value,
+        Work_Area: document.getElementById('regArea').value,
+        Wallet_Type: document.getElementById('walletType').value,
+        Wallet_Number: document.getElementById('walletNum').value
+    };
 
-            if(!userData.Name || !userData.Phone || !userData.Password) {
-                alert("يا بطل، برجاء إكمال البيانات الأساسية!"); return;
-            }
+    if(!userData.Name || !userData.Phone || !userData.Password) {
+        alert("يا بطل، برجاء إكمال البيانات الأساسية!"); return;
+    }
 
-            btn.innerText = "جاري الحفظ أوتوماتيكياً...";
-            btn.disabled = true;
+    btn.innerText = "جاري الحفظ...";
+    btn.disabled = true;
 
-            try {
-                // رابط جوجل سكربت الخاص بك
-                await fetch('https://script.google.com/macros/s/AKfycbwIyxtO1oy9IblAWqppLTgYmDz72RtsclYJmmE-bh98br-YRKWcn9XTQBflxf-_UO4T/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(userData)
-});
-                
-                alert("✅ تم التسجيل بنجاح! سيتم مراجعة بياناتك من قبل الإدارة.");
-                window.location.href = 'login.html';
-            } catch(e) {
-                alert("❌ حدث خطأ، تأكد من اتصالك بالإنترنت");
-                btn.innerText = "إنشاء حسابي بنجاح";
-                btn.disabled = false;
-            }
-        }
+    try {
+        await fetch('https://script.google.com/macros/s/AKfycbxXwTE6FbBd7RBzLRC0USAvc4fBUORBr0RkeqHgmcZguQUr1EBa1Lz9Ph8_RBsVGnOb/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(userData)
+        });
+        alert("✅ تم التسجيل! انتظر تفعيل الإدارة.");
+        window.location.href = 'login.html';
+    } catch(e) {
+        alert("❌ خطأ في الاتصال");
+        btn.innerText = "إنشاء حسابي";
+        btn.disabled = false;
+    }
+}
     </script>
 </body>
 </html>
