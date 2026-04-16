@@ -43,15 +43,17 @@
     const pass = document.getElementById('uPass').value;
     const btn = document.getElementById('logBtn');
 
+    if(!phone || !pass) { alert("يا بطل، كمل بياناتك الأول!"); return; }
+
     btn.innerText = "جاري التحقق...";
     btn.disabled = true;
 
     try {
-        // نكلم جوجل سكريبت مباشرة لسحب كل المستخدمين
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwIyxtO1oy9IblAWqppLTgYmDz72RtsclYJmmE-bh98br-YRKWcn9XTQBflxf-_UO4T/exec');
+        // الرابط الجديد بتاعك
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxXwTE6FbBd7RBzLRC0USAvc4fBUORBr0RkeqHgmcZguQUr1EBa1Lz9Ph8_RBsVGnOb/exec');
         const allUsers = await response.json();
         
-        // البحث عن المستخدم المطابق
+        // البحث عن الموظف برقم التليفون والباسورد
         const user = allUsers.find(u => u.Phone == phone && u.Password == pass);
 
         if(user) {
@@ -59,7 +61,7 @@
                 localStorage.setItem('boss_user', JSON.stringify(user));
                 window.location.href = 'user-dash.html';
             } else {
-                alert("⚠️ حسابك لسه قيد المراجعة (Pending)!");
+                alert("⚠️ حسابك قيد المراجعة.. ادخل الشيت وغير Status لـ Active");
                 resetBtn();
             }
         } else {
@@ -67,7 +69,7 @@
             resetBtn();
         }
     } catch(e) {
-        alert("خطأ في الاتصال بالسيرفر الجديد");
+        alert("مشكلة في الاتصال بالسيرفر");
         resetBtn();
     }
 }
