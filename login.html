@@ -38,44 +38,38 @@
     </div>
 
     <script>
-        async function checkUser() {
-            const phone = document.getElementById('uPhone').value;
-            const pass = document.getElementById('uPass').value;
-            const btn = document.getElementById('logBtn');
+        async function userLogin() {
+    const phone = document.getElementById('uPhone').value;
+    const pass = document.getElementById('uPass').value;
+    const btn = document.getElementById('logBtn');
 
-            if(!phone || !pass) { alert("يا بطل، كمل بياناتك الأول!"); return; }
+    btn.innerText = "جاري التحقق أوتوماتيكياً...";
+    btn.disabled = true;
 
-            btn.innerText = "جاري الفحص...";
-            btn.disabled = true;
+    try {
+        // الرابط الجديد بتاعك
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwIyxtO1oy9IblAWqppLTgYmDz72RtsclYJmmE-bh98br-YRKWcn9XTQBflxf-_UO4T/exec');
+        const allUsers = await response.json();
+        
+        // البحث عن المستخدم في البيانات اللي جاية من جوجل شيت
+        const user = allUsers.find(u => u.Phone == phone && u.Password == pass);
 
-            try {
-                // البحث في الشيت عن الرقم والباسورد معاً
-                const response = await fetch(`https://sheetdb.io/api/v1/uvhb8vxlpe7ve/search?Phone=${phone}&Password=${pass}`);
-                const data = await response.json();
-
-                if(data.length > 0) {
-                    const user = data[0];
-                    if(user.Status === "Active") {
-                        localStorage.setItem('boss_user', JSON.stringify(user));
-                        window.location.href = 'user-dash.html'; // الدخول لصفحة الموظف
-                    } else {
-                        alert("⚠️ حسابك لسه 'Pending'.. كلم المدير يفعله!");
-                        resetBtn();
-                    }
-                } else {
-                    alert("❌ بياناتك غلط! اتأكد من الرقم والباسورد");
-                    resetBtn();
-                }
-            } catch(e) {
-                alert("في مشكلة في السيرفر، جرب تاني");
-                resetBtn();
+        if(user) {
+            if(user.Status === "Active") {
+                localStorage.setItem('boss_user', JSON.stringify(user));
+                window.location.href = 'user-dash.html';
+            } else {
+                alert("⚠️ حسابك لسه قيد المراجعة.. كلم المدير!");
             }
+        } else {
+            alert("❌ الرقم أو كلمة السر غلط!");
         }
-
-        function resetBtn() {
-            const btn = document.getElementById('logBtn');
-            btn.innerText = "دخول لوحة التحكم";
-            btn.disabled = false;
+    } catch(e) {
+        alert("في مشكلة في الاتصال، تأكد من إعدادات الـ Web App");
+    }
+    btn.innerText = "دخول لوحة التحكم";
+    btn.disabled = false;
+}
         }
     </script>
 </body>
