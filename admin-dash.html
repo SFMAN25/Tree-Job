@@ -44,72 +44,46 @@
     </table>
 
     <script>
-        const apiURL = 'https://script.google.com/macros/s/AKfycbxXwTE6FbBd7RBzLRC0USAvc4fBUORBr0RkeqHgmcZguQUr1EBa1Lz9Ph8_RBsVGnOb/exec';
-        // 1. وظيفة سحب البيانات وعرضها في الجدول
-        function fetchData() {
-            const tableBody = document.getElementById('usersTable');
-            tableBody.innerHTML = '<tr><td colspan="6">جاري تحميل فريق العمل...</td></tr>';
+     const apiURL = 'https://script.google.com/macros/s/AKfycbzrTMCDgpeLe39BNRY87LLALPf5AZL_gFV2-pmyffY6Qe9Bj3to2bNXcsRCr9Uq9a3P/exec';
 
-            fetch(apiURL)
-            .then(res => res.json())
-            .then(data => {
-                tableBody.innerHTML = '';
-                data.forEach(user => {
-                    const statusClass = user.Status === 'Active' ? 'active' : 'pending';
-                    const btnText = user.Status === 'Active' ? 'تعطيل ❌' : 'تفعيل ✅';
-                    
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${user.Name}</td>
-                            <td>${user.Phone}</td>
-                            <td>
-                                <input type="number" id="sal-${user.Phone}" value="${user.Salary}">
-                                <button class="save-btn" onclick="updateAmount('${user.Phone}', 'Salary')">حفظ</button>
-                            </td>
-                            <td>
-                                <input type="number" id="rate-${user.Phone}" value="${user.Rating}" max="5">
-                                <button class="save-btn" onclick="updateAmount('${user.Phone}', 'Rating')">حفظ</button>
-                            </td>
-                            <td><span class="status-badge ${statusClass}">${user.Status}</span></td>
-                            <td>
-                                <button class="btn-toggle" onclick="toggleStatus('${user.Phone}', '${user.Status}')">${btnText}</button>
-                                <button class="btn-delete" onclick="deleteUser('${user.Phone}')">حذف</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
-        }
+// 1. وظيفة تغيير الحالة (Active / Pending)
+function toggleStatus(phone, currentStatus) {
+    const newStatus = currentStatus === 'Active' ? 'Pending' : 'Active';
+    
+    fetch(apiURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'update', Phone: phone, Status: newStatus })
+    }).then(() => {
+        alert(`تم تغيير الحالة إلى ${newStatus}`);
+        fetchData(); // تحديث الجدول
+    });
+}
 
-        // 2. وظيفة تفعيل/تعطيل الحساب
-        function toggleStatus(phone, currentStatus) {
-            const newStatus = currentStatus === 'Active' ? 'Pending' : 'Active';
-            
-            fetch(`${apiURL}/Phone/${phone}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: { "Status": newStatus } })
-            })
-            .then(() => {
-                alert(`تم تغيير حالة الحساب إلى ${newStatus}`);
-                fetchData();
-            });
-        }
+// 2. وظيفة تحديث الراتب أو التقييم
+function updateAmount(phone, field) {
+    const val = field === 'Salary' ? document.getElementById(`sal-${phone}`).value : document.getElementById(`rate-${phone}`).value;
+    
+    fetch(apiURL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'update', Phone: phone, [field]: val })
+    }).then(() => {
+        alert('تم التحديث بنجاح!');
+        fetchData();
+    });
+}
 
-        // 3. وظيفة تحديث الراتب أو التقييم
-        function updateAmount(phone, field) {
-            const val = field === 'Salary' ? document.getElementById(`sal-${phone}`).value : document.getElementById(`rate-${phone}`).value;
-            
-            fetch(`${apiURL}/Phone/${phone}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: { [field]: val } })
-            })
-            .then(() => {
-                alert(`تم تحديث ${field === 'Salary' ? 'الراتب' : 'التقييم'} بنجاح!`);
-                fetchData();
-            });
-        }
+// 3. وظيفة الحذف
+function deleteUser(phone) {
+    if(confirm('هل أنت متأكد من الحذف؟')) {
+        fetch(apiURL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'delete', Phone: phone })
+        }).then(() => {
+            alert('تم الحذف بنجاح');
+            fetchData();
+        });
+    }
+}
 
         // 4. وظيفة حذف موظف نهائياً
         function deleteUser(phone) {
