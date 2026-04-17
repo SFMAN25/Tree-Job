@@ -59,12 +59,11 @@
     btn.disabled = true;
 
     try {
-        await fetch('https://script.google.com/macros/s/AKfycbxXwTE6FbBd7RBzLRC0USAvc4fBUORBr0RkeqHgmcZguQUr1EBa1Lz9Ph8_RBsVGnOb/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(userData)
-        });
+        await fetch('https://script.google.com/macros/s/AKfycbzrTMCDgpeLe39BNRY87LLALPf5AZL_gFV2-pmyffY6Qe9Bj3to2bNXcsRCr9Uq9a3P/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(userData)
+});
         alert("✅ تم التسجيل! انتظر تفعيل الإدارة.");
         window.location.href = 'login.html';
     } catch(e) {
