@@ -1,104 +1,29 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الـ BOSS</title>
+    <meta charset="UTF-8"><title>لوحتي | BOSS</title>
     <style>
-        :root { --gold: #fbbf24; --blue: #38bdf8; --red: #f87171; --green: #4ade80; --dark: #0f172a; }
-        body { background: var(--dark); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); padding-bottom: 15px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 10px; overflow: hidden; font-size: 14px; }
-        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #334155; }
-        th { background: #334155; color: var(--gold); }
-        .status-badge { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 12px; }
-        .active { background: rgba(74, 222, 128, 0.2); color: var(--green); }
-        .pending { background: rgba(248, 113, 113, 0.2); color: var(--red); }
-        button { cursor: pointer; border: none; border-radius: 5px; padding: 8px 12px; font-weight: bold; transition: 0.3s; }
-        .btn-toggle { background: var(--blue); color: #000; }
-        .btn-delete { background: var(--red); color: white; margin-right: 5px; }
-        input[type="number"] { width: 60px; background: #0f172a; border: 1px solid var(--gold); color: white; border-radius: 5px; text-align: center; }
-        .save-btn { background: var(--gold); color: #000; padding: 5px; margin-top: 5px; display: block; width: 100%; font-size: 10px; }
+        body { background:url('https://files.catbox.moe/n4mjhu.png') center/cover; color:white; font-family:sans-serif; display:flex; justify-content:center; padding-top:50px; min-height: 100vh; margin:0; }
+        .box { background:rgba(15,23,42,0.9); padding:30px; border-radius:20px; width:350px; text-align:center; border:1px solid #fbbf24; height: fit-content; }
+        .stat { background:#1e293b; padding:15px; margin:10px 0; border-radius:10px; border-right: 4px solid #fbbf24; }
+        .gold { color:#fbbf24; font-size:24px; font-weight:bold; }
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <h2>لوحة تحكم المدير (الـ BOSS)</h2>
-        <button onclick="fetchData()" style="background: var(--gold);">تحديث البيانات 🔄</button>
+    <div class="box">
+        <h2 id="un">جاري التحميل...</h2>
+        <div class="stat">الراتب الحالي <div class="gold" id="us">0</div></div>
+        <div class="stat">التقييم <div class="gold" id="ur">0</div></div>
+        <div class="stat">المنطقة <div id="ua">...</div></div>
+        <button onclick="localStorage.clear(); location.href='index.html'" style="background:#f87171; color:white; border:none; padding:10px; cursor:pointer; width:100%; border-radius:10px; margin-top:10px;">تسجيل الخروج</button>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>الاسم</th>
-                <th>الهاتف</th>
-                <th>الراتب</th>
-                <th>التقييم</th>
-                <th>الحالة</th>
-                <th>التحكم</th>
-            </tr>
-        </thead>
-        <tbody id="usersTable">
-            </tbody>
-    </table>
-
     <script>
-const apiURL = 'https://script.google.com/macros/s/AKfycbzrTMCDgpeLe39BNRY87LLALPf5AZL_gFV2-pmyffY6Qe9Bj3to2bNXcsRCr9Uq9a3P/exec';
-// 1. وظيفة تغيير الحالة (Active / Pending)
-function toggleStatus(phone, currentStatus) {
-    const newStatus = currentStatus === 'Active' ? 'Pending' : 'Active';
-    
-    fetch(apiURL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'update', Phone: phone, Status: newStatus })
-    }).then(() => {
-        alert(`تم تغيير الحالة إلى ${newStatus}`);
-        fetchData(); // تحديث الجدول
-    });
-}
-
-// 2. وظيفة تحديث الراتب أو التقييم
-function updateAmount(phone, field) {
-    const val = field === 'Salary' ? document.getElementById(`sal-${phone}`).value : document.getElementById(`rate-${phone}`).value;
-    
-    fetch(apiURL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'update', Phone: phone, [field]: val })
-    }).then(() => {
-        alert('تم التحديث بنجاح!');
-        fetchData();
-    });
-}
-
-// 3. وظيفة الحذف
-function deleteUser(phone) {
-    if(confirm('هل أنت متأكد من الحذف؟')) {
-        fetch(apiURL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'delete', Phone: phone })
-        }).then(() => {
-            alert('تم الحذف بنجاح');
-            fetchData();
-        });
-    }
-}
-
-        // 4. وظيفة حذف موظف نهائياً
-        function deleteUser(phone) {
-            if(confirm('هل أنت متأكد من حذف هذا الموظف نهائياً؟')) {
-                fetch(`${apiURL}/Phone/${phone}`, {
-                    method: 'DELETE'
-                })
-                .then(() => {
-                    alert('تم الحذف بنجاح');
-                    fetchData();
-                });
-            }
-        }
-
-        // تشغيل السحب عند فتح الصفحة
-        fetchData();
+        const u = JSON.parse(localStorage.getItem('boss_user'));
+        if(!u) location.href='index.html';
+        document.getElementById('un').innerText = "أهلاً، " + u.Name;
+        document.getElementById('us').innerText = (u.Salary || 0) + " ج.م";
+        document.getElementById('ur').innerText = (u.Rating || 0) + " ⭐";
+        document.getElementById('ua').innerText = u.Work_Area || "غير محدد";
     </script>
 </body>
 </html>
